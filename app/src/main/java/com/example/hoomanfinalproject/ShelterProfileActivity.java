@@ -118,7 +118,7 @@ public class ShelterProfileActivity extends AppCompatActivity {
                 shelterNameTextView.setText(shelterName);
                 shelterLocationTextView.setText("Location: " + shelterLocation);
                 shelterUsernameTextView.setText("Username: " + shelterUsername);
-                shelterContactTextView.setText("Contact Info:\nPhone: " + shelterPhone + "\nEmail: " + shelterEmail);
+                shelterContactTextView.setText("Contact Info:\n Phone: " + shelterPhone + "\n Email: " + shelterEmail);
             }
 
             cursor.close();
@@ -241,22 +241,130 @@ public class ShelterProfileActivity extends AppCompatActivity {
 
             // Set the dog image if available
             if (imagePath != null && !imagePath.isEmpty()) {
-                File imgFile = new  File(imagePath);
-                if(imgFile.exists()){
+                File imgFile = new File(imagePath);
+                if (imgFile.exists()) {
                     Uri imageUri = Uri.fromFile(imgFile);
                     dialogDogImage.setImageURI(imageUri);
                 }
             } else {
-                // If no image is found, set a default image or leave it empty
                 dialogDogImage.setImageResource(R.drawable.ic_placeholder); // Provide a default image
             }
 
             builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
+
+            // Add Edit and Delete buttons to the dialog
+            builder.setNeutralButton("Edit", (dialog, which) -> {
+                editDogDetails(dogName);
+            });
+
+            builder.setNegativeButton("Delete", (dialog, which) -> {
+                deleteDog(dogName);
+            });
+
             builder.create().show();
         } else {
             // Handle case where no dog details are found
             Toast.makeText(this, "Error loading dog details", Toast.LENGTH_SHORT).show();
         }
+    }
+    private void editDogDetails(String dogName) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        // Query for the dog details using the dog's name
+        Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
+                new String[]{
+                        DatabaseHelper.COLUMN_DOG_NAME,
+                        DatabaseHelper.COLUMN_DOG_BREED,
+                        DatabaseHelper.COLUMN_DOG_AGE,
+                        DatabaseHelper.COLUMN_DOG_DESCRIPTION,
+                        DatabaseHelper.COLUMN_DOG_IMAGE
+                },
+                DatabaseHelper.COLUMN_DOG_NAME + "=?",
+                new String[]{dogName}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String breed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
+            String age = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
+            String description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
+            String imagePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
+
+            // Populate the fields in the add dog form with the selected dog's details
+            dogNameEditText.setText(dogName);
+            dogBreedEditText.setText(breed);
+            dogAgeEditText.setText(age);
+            dogDescriptionEditText.setText(description);
+            dogImagePath = imagePath;
+
+            // Show the add dog layout and hide the list
+            addDogLayout.setVisibility(View.VISIBLE);
+            dogsListView.setVisibility(View.GONE);
+            addDogButton.setVisibility(View.GONE);
+
+            // Change the save button text to "Update Dog"
+            saveDogButton.setText("Update Dog");
+
+            // Update the save button action to update instead of saving a new dog
+            saveDogButton.setOnClickListener(v -> updateDogProfile(dogName));
+        }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+
+    private void updateDogProfile(String dogName) {
+        String name = dogNameEditText.getText().toString().trim();
+        String breed = dogBreedEditText.getText().toString().trim();
+        String age = dogAgeEditText.getText().toString().trim();
+        String description = dogDescriptionEditText.getText().toString().trim();
+
+        if (name.isEmpty() || breed.isEmpty() || age.isEmpty() || description.isEmpty()) {
+            Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_DOG_NAME, name);
+        values.put(DatabaseHelper.COLUMN_DOG_BREED, breed);
+        values.put(DatabaseHelper.COLUMN_DOG_AGE, age);
+        values.put(DatabaseHelper.COLUMN_DOG_DESCRIPTION, description);
+        values.put(DatabaseHelper.COLUMN_DOG_IMAGE, dogImagePath);  // Keep the existing image path
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        int rowsUpdated = db.update(DatabaseHelper.TABLE_DOGS, values,
+                DatabaseHelper.COLUMN_DOG_NAME + "=?", new String[]{dogName});
+
+        if (rowsUpdated > 0) {
+            Toast.makeText(this, "Dog updated successfully", Toast.LENGTH_SHORT).show();
+            loadDogs(getIntent().getStringExtra("shelterUsername"));  // Reload dogs list
+            resetDogForm();
+            addDogLayout.setVisibility(View.GONE);
+            dogsListView.setVisibility(View.VISIBLE);
+            addDogButton.setVisibility(View.VISIBLE);
+        } else {
+            Toast.makeText(this, "Error updating dog", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void deleteDog(String dogName) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Dog")
+                .setMessage("Are you sure you want to delete this dog?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    int rowsDeleted = db.delete(DatabaseHelper.TABLE_DOGS,
+                            DatabaseHelper.COLUMN_DOG_NAME + "=?",
+                            new String[]{dogName});
+
+                    if (rowsDeleted > 0) {
+                        Toast.makeText(ShelterProfileActivity.this, "Dog deleted", Toast.LENGTH_SHORT).show();
+                        loadDogs(getIntent().getStringExtra("shelterUsername"));  // Reload dog list
+                    } else {
+                        Toast.makeText(ShelterProfileActivity.this, "Error deleting dog", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
 
