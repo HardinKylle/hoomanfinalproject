@@ -1,0 +1,64 @@
+<!-- activity_shelter_dashboard.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/addDogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Dog" />
+
+    <Button
+        android:id="@+id/editDogButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Dog" />
+
+    <ListView
+        android:id="@+id/dogsListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:id="@+id/addDogLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- Input fields for adding dog profile -->
+        <EditText
+            android:id="@+id/dogName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dog Name" />
+
+        <EditText
+            android:id="@+id/dogBreed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Breed" />
+
+        <EditText
+            android:id="@+id/dogAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Age" />
+
+        <EditText
+            android:id="@+id/dogDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description" />
+
+
+        <!-- Other input fields for adding dog details -->
+        <Button
+            android:id="@+id/saveDogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" />
+    </LinearLayout>
+</LinearLayout>

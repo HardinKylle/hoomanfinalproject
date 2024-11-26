@@ -1,6 +1,7 @@
 package com.example.hoomanfinalproject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         signupButton = findViewById(R.id.signupButton);
 
+        // Login Button Click Listener
         loginButton.setOnClickListener(v -> {
             String username = usernameEditText.getText().toString().trim();
             String password = passwordEditText.getText().toString().trim();
@@ -39,17 +41,26 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            // Check user credentials in the database
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, null,
                     DatabaseHelper.COLUMN_USERNAME + "=? AND " + DatabaseHelper.COLUMN_PASSWORD + "=? AND " + DatabaseHelper.COLUMN_USER_TYPE + "=?",
                     new String[]{username, password, userType}, null, null, null);
 
             if (cursor.moveToFirst()) {
+                // Store logged-in user data in SharedPreferences
+                SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("username", username);
+                editor.putString("userType", userType);
+                editor.apply();
+
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+
                 // Navigate to respective dashboard
                 if ("Normal".equals(userType)) {
                     startActivity(new Intent(this, UserDashboardActivity.class));
-                } else {
+                } else if ("Shelter".equals(userType)) {
                     startActivity(new Intent(this, ShelterDashboardActivity.class));
                 }
             } else {
@@ -58,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             cursor.close();
         });
 
+        // Sign Up Button Click Listener
         signupButton.setOnClickListener(v -> {
             startActivity(new Intent(this, SignUpActivity.class));
         });
