@@ -1,7 +1,6 @@
 package com.example.hoomanfinalproject;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -20,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Check if a session already exists
+        // Removed SharedPreferences logic for username
         setContentView(R.layout.activity_main);
 
         dbHelper = new DatabaseHelper(this);
@@ -41,32 +43,42 @@ public class MainActivity extends AppCompatActivity {
                 return;
             }
 
+            if ("Select User Type".equals(userType)) {
+                Toast.makeText(this, "Please select a valid user type", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             // Check user credentials in the database
             SQLiteDatabase db = dbHelper.getReadableDatabase();
             Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, null,
                     DatabaseHelper.COLUMN_USERNAME + "=? AND " + DatabaseHelper.COLUMN_PASSWORD + "=? AND " + DatabaseHelper.COLUMN_USER_TYPE + "=?",
                     new String[]{username, password, userType}, null, null, null);
 
-            if (cursor.moveToFirst()) {
-                // Store logged-in user data in SharedPreferences
-                SharedPreferences sharedPref = getSharedPreferences("UserSession", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("username", username);
-                editor.putString("userType", userType);
-                editor.apply();
+            if (cursor != null && cursor.moveToFirst()) {
+                // Navigate to respective dashboard
+                Intent intent;
+                if ("Adopter".equals(userType)) {
+                    intent = new Intent(this, UserHomeActivity.class);
+                } else if ("Shelter".equals(userType)) {
+                    // Pass shelterUsername to ShelterProfileActivity directly
+                    intent = new Intent(this, ShelterProfileActivity.class);
+                    intent.putExtra("shelterUsername", username); // Pass username as extra
+                } else {
+                    return;
+                }
+
+                // Start the respective activity
+                startActivity(intent);
+                finish(); // End login activity
 
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
-
-                // Navigate to respective dashboard
-                if ("Adopter".equals(userType)) {
-                    startActivity(new Intent(this, UserDashboardActivity.class));
-                } else if ("Shelter".equals(userType)) {
-                    startActivity(new Intent(this, ShelterProfileActivity.class));
-                }
             } else {
                 Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
             }
-            cursor.close();
+
+            if (cursor != null) {
+                cursor.close();
+            }
         });
 
         // Sign Up Button Click Listener

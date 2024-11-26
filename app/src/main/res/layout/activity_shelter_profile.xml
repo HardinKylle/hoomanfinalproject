@@ -45,6 +45,14 @@
         android:text="Add Dog"
         android:layout_marginTop="20dp" />
 
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center" />
+
     <!-- List of Dogs -->
     <ListView
         android:id="@+id/dogsListView"
@@ -53,6 +61,7 @@
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
         android:paddingTop="20dp" />
+
 
     <!-- Add/Edit Dog Layout -->
     <LinearLayout
@@ -89,6 +98,7 @@
             android:layout_height="wrap_content"
             android:hint="Dog Name"
             android:layout_marginBottom="8dp" />
+
 
         <!-- Dog Breed Input -->
         <EditText
