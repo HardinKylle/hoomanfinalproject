@@ -12,6 +12,10 @@ import android.widget.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 public class ShelterProfileActivity extends AppCompatActivity {
@@ -111,7 +115,7 @@ public class ShelterProfileActivity extends AppCompatActivity {
                 String shelterPhone = cursor.getString(shelterPhoneIndex);
                 String shelterEmail = cursor.getString(shelterEmailIndex);
 
-                shelterNameTextView.setText("Shelter Name: " + shelterName);
+                shelterNameTextView.setText(shelterName);
                 shelterLocationTextView.setText("Location: " + shelterLocation);
                 shelterUsernameTextView.setText("Username: " + shelterUsername);
                 shelterContactTextView.setText("Contact Info:\nPhone: " + shelterPhone + "\nEmail: " + shelterEmail);
@@ -132,30 +136,18 @@ public class ShelterProfileActivity extends AppCompatActivity {
 
         ArrayList<String> dogNames = new ArrayList<>();
         if (cursor != null && cursor.moveToFirst()) {
-            // Check the column index before accessing it
-            int dogNameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME);
-
-            if (dogNameIndex != -1) {  // Only proceed if the column exists
-                do {
-                    String dogName = cursor.getString(dogNameIndex);
-                    dogNames.add(dogName + " 🐾");
-                } while (cursor.moveToNext());
-            } else {
-                // Handle the case where the column is not found
-                Log.e("loadDogs", "Error: Column '" + DatabaseHelper.COLUMN_DOG_NAME + "' not found in the database.");
-            }
+            do {
+                String dogName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
+                dogNames.add(dogName + " 🐾");
+                Log.d("loadDogs", "Loaded dog: " + dogName);  // Debugging
+            } while (cursor.moveToNext());
             cursor.close();
         } else {
             Log.d("loadDogs", "No dogs found for shelter: " + shelterUsername);
         }
 
-        // If no dogs are found, handle it gracefully
-        if (dogNames.isEmpty()) {
-            Toast.makeText(this, "No dogs found for this shelter.", Toast.LENGTH_SHORT).show();
-        }
-
         dogsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dogNames);
-        dogsListView.setAdapter(dogsAdapter);
+        dogsListView.setAdapter(dogsAdapter);  // Refresh ListView
     }
 
     private void saveDogProfile(String shelterUsername) {
@@ -174,7 +166,7 @@ public class ShelterProfileActivity extends AppCompatActivity {
         values.put(DatabaseHelper.COLUMN_DOG_BREED, breed);
         values.put(DatabaseHelper.COLUMN_DOG_AGE, age);
         values.put(DatabaseHelper.COLUMN_DOG_DESCRIPTION, description);
-        values.put(DatabaseHelper.COLUMN_DOG_IMAGE, dogImagePath);
+        values.put(DatabaseHelper.COLUMN_DOG_IMAGE, dogImagePath);  // Save the path instead of URI
         values.put(DatabaseHelper.COLUMN_SHELTER_USERNAME, shelterUsername);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -182,6 +174,8 @@ public class ShelterProfileActivity extends AppCompatActivity {
 
         if (result != -1) {
             Toast.makeText(this, "Dog profile saved", Toast.LENGTH_SHORT).show();
+            // Reset fields
+            resetDogForm();
             addDogLayout.setVisibility(View.GONE);
             dogsListView.setVisibility(View.VISIBLE);
             addDogButton.setVisibility(View.VISIBLE);
@@ -190,6 +184,18 @@ public class ShelterProfileActivity extends AppCompatActivity {
             Toast.makeText(this, "Error saving dog profile", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    private void resetDogForm() {
+        // Clear all input fields
+        dogNameEditText.setText("");
+        dogBreedEditText.setText("");
+        dogAgeEditText.setText("");
+        dogDescriptionEditText.setText("");
+        dogImageView.setImageResource(R.drawable.ic_placeholder); // Replace with a default image
+        dogImagePath = null; // Clear the image path
+    }
+
 
     private void showDogDetailsDialog(String dogName) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -207,64 +213,53 @@ public class ShelterProfileActivity extends AppCompatActivity {
                 new String[]{dogName}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            // Check column indices before accessing the data
-            int dogNameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME);
-            int dogBreedIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED);
-            int dogAgeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE);
-            int dogDescriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION);
-            int dogImageIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE);
+            String breed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
+            String age = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
+            String description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
+            String imagePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
 
-            if (dogNameIndex != -1 && dogBreedIndex != -1 && dogAgeIndex != -1 &&
-                    dogDescriptionIndex != -1 && dogImageIndex != -1) {
+            // Close the cursor as we have the data we need
+            cursor.close();
 
-                // Only proceed if all columns are valid
-                String breed = cursor.getString(dogBreedIndex);
-                String age = cursor.getString(dogAgeIndex);
-                String description = cursor.getString(dogDescriptionIndex);
-                String imagePath = cursor.getString(dogImageIndex);
+            // Create and show the dialog
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_dog_details, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setView(dialogView);
 
-                // Close the cursor as we have the data we need
-                cursor.close();
+            // Find the views inside the dialog
+            ImageView dialogDogImage = dialogView.findViewById(R.id.dialogDogImage);
+            TextView dialogDogName = dialogView.findViewById(R.id.dialogDogName);
+            TextView dialogDogBreed = dialogView.findViewById(R.id.dialogDogBreed);
+            TextView dialogDogAge = dialogView.findViewById(R.id.dialogDogAge);
+            TextView dialogDogDescription = dialogView.findViewById(R.id.dialogDogDescription);
 
-                // Create and show the dialog
-                View dialogView = getLayoutInflater().inflate(R.layout.dialog_dog_details, null);
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setView(dialogView);
+            // Set the data to the dialog views
+            dialogDogName.setText(dogName);
+            dialogDogBreed.setText("Breed: " + breed);
+            dialogDogAge.setText("Age: " + age);
+            dialogDogDescription.setText("Description: " + description);
 
-                // Find the views inside the dialog
-                ImageView dialogDogImage = dialogView.findViewById(R.id.dialogDogImage);
-                TextView dialogDogName = dialogView.findViewById(R.id.dialogDogName);
-                TextView dialogDogBreed = dialogView.findViewById(R.id.dialogDogBreed);
-                TextView dialogDogAge = dialogView.findViewById(R.id.dialogDogAge);
-                TextView dialogDogDescription = dialogView.findViewById(R.id.dialogDogDescription);
-
-                // Set the data to the dialog views
-                dialogDogName.setText(dogName);
-                dialogDogBreed.setText("Breed: " + breed);
-                dialogDogAge.setText("Age: " + age);
-                dialogDogDescription.setText("Description: " + description);
-
-                // Set the dog image if available
-                if (imagePath != null && !imagePath.isEmpty()) {
-                    Uri imageUri = Uri.parse(imagePath);
+            // Set the dog image if available
+            if (imagePath != null && !imagePath.isEmpty()) {
+                File imgFile = new  File(imagePath);
+                if(imgFile.exists()){
+                    Uri imageUri = Uri.fromFile(imgFile);
                     dialogDogImage.setImageURI(imageUri);
-                } else {
-                    // If no image is found, set a default image or leave it empty
-                    dialogDogImage.setImageResource(R.drawable.ic_placeholder); // Provide a default image
                 }
-
-                builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
-                builder.create().show();
             } else {
-                // Handle the case where one or more columns are not found
-                Toast.makeText(this, "Error: Missing data in dog details", Toast.LENGTH_SHORT).show();
-                cursor.close();
+                // If no image is found, set a default image or leave it empty
+                dialogDogImage.setImageResource(R.drawable.ic_placeholder); // Provide a default image
             }
+
+            builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
+            builder.create().show();
         } else {
             // Handle case where no dog details are found
             Toast.makeText(this, "Error loading dog details", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
 
     private void selectImage() {
@@ -278,17 +273,43 @@ public class ShelterProfileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
-            // Get the image URI from the intent
-            Uri imageUri = data.getData();
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            if (data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                try {
+                    // Get the file from URI
+                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    String filename = "dog_image_" + System.currentTimeMillis() + ".jpg";  // Unique file name
+                    File file = new File(getFilesDir(), filename);  // Save file to internal storage
+                    FileOutputStream outputStream = new FileOutputStream(file);
 
-            // Display the selected image in the ImageView
-            dogImageView.setImageURI(imageUri);
+                    // Copy image from InputStream to FileOutputStream
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, length);
+                    }
 
-            // Optionally, store the image path or URI for later use
-            dogImagePath = imageUri.toString();
+                    // Close streams
+                    outputStream.flush();
+                    outputStream.close();
+                    inputStream.close();
+
+                    // Store the file path in dogImagePath
+                    dogImagePath = file.getAbsolutePath();
+                    dogImageView.setImageURI(Uri.fromFile(file));  // Show image in the ImageView
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to save the image", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Failed to select an image", Toast.LENGTH_SHORT).show();
+            }
         }
     }
+
+
 
     private void logout() {
         // Logout functionality: Redirect to login page

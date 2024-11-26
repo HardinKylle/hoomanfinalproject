@@ -43,10 +43,13 @@ public class SignUpActivity extends AppCompatActivity {
         shelterLayout = findViewById(R.id.shelterLayout);
 
         // Set up the Spinner for user types
-        String[] userTypes = {"Adopter", "Shelter"};  // Values for the Spinner
+        String[] userTypes = {"Select User Type", "Adopter", "Shelter"};  // Add "Select User Type" as the first item
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, userTypes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);  // Set dropdown style
         userTypeSpinner.setAdapter(adapter);  // Set the adapter to the Spinner
+
+// Set default selection to "Select User Type"
+        userTypeSpinner.setSelection(0); // Select the first item by default
 
         // Toggle visibility based on user type selection
         userTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -74,18 +77,24 @@ public class SignUpActivity extends AppCompatActivity {
             String password = passwordEditText.getText().toString().trim();
             String email = emailEditText.getText().toString().trim();
             String phone = phoneEditText.getText().toString().trim();
-            String userType = userTypeSpinner.getSelectedItem().toString();
+            String userType = userTypeSpinner.getSelectedItem().toString(); // Get selected user type
 
             if (username.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            if ("Select User Type".equals(userType)) {
+                Toast.makeText(this, "Please select a valid user type", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Continue with user type specific data (Adopter or Shelter)
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.COLUMN_USERNAME, username);
             values.put(DatabaseHelper.COLUMN_PASSWORD, password);
-            values.put(DatabaseHelper.COLUMN_EMAIL, email); // Insert email
-            values.put(DatabaseHelper.COLUMN_PHONE, phone); // Insert phone
+            values.put(DatabaseHelper.COLUMN_EMAIL, email);
+            values.put(DatabaseHelper.COLUMN_PHONE, phone);
             values.put(DatabaseHelper.COLUMN_USER_TYPE, userType);
 
             if (userType.equals("Adopter")) {
@@ -97,7 +106,7 @@ public class SignUpActivity extends AppCompatActivity {
                     return;
                 }
 
-                values.put("age", age); // Add extra columns to the database if needed
+                values.put("age", age);
                 values.put("address", address);
 
             } else if (userType.equals("Shelter")) {
@@ -113,6 +122,7 @@ public class SignUpActivity extends AppCompatActivity {
                 values.put("shelterLocation", shelterLocation);
             }
 
+            // Insert into database
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             long result = db.insert(DatabaseHelper.TABLE_USERS, null, values);
 

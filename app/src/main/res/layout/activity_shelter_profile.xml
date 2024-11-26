@@ -4,64 +4,103 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Shelter Information -->
-    <TextView
-        android:id="@+id/shelterNameTextView"
+    <!-- Shelter Information Card -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Shelter Name"
-        android:textSize="18sp"
-        android:paddingBottom="8dp" />
+        android:orientation="vertical"
+        android:background="#F5F5F5"
+        android:padding="16dp"
+        android:elevation="4dp"
+        android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/shelterLocationTextView"
+        <!-- Shelter Name -->
+        <TextView
+            android:id="@+id/shelterNameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Shelter Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:paddingBottom="8dp" />
+
+        <!-- Shelter Location -->
+        <TextView
+            android:id="@+id/shelterLocationTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:paddingBottom="4dp" />
+
+        <!-- Shelter Username -->
+        <TextView
+            android:id="@+id/shelterUsernameTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Username"
+            android:textSize="16sp"
+            android:textColor="#555555"
+            android:paddingBottom="4dp" />
+
+        <!-- Contact Information -->
+        <TextView
+            android:id="@+id/shelterContactTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contact: (123) 456-7890"
+            android:textSize="16sp"
+            android:textColor="#555555" />
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Location"
-        android:textSize="18sp"
-        android:paddingBottom="8dp" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/shelterUsernameTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Username"
-        android:textSize="18sp"
-        android:paddingBottom="8dp" />
+        <!-- Add Dog Button -->
+        <Button
+            android:id="@+id/addDogButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Dog"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="8dp" />
 
-    <TextView
-        android:id="@+id/shelterContactTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Contact: "
-        android:textSize="16sp"
-        android:paddingBottom="8dp" />
-
-    <!-- Add Dog Button -->
-    <Button
-        android:id="@+id/addDogButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Add Dog"
-        android:layout_marginTop="20dp" />
-
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:layout_marginTop="20dp"
-        android:layout_gravity="center" />
+        <!-- Logout Button -->
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:backgroundTint="#F44336"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
 
     <!-- List of Dogs -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Available Dogs"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:textColor="#000000" />
+
     <ListView
         android:id="@+id/dogsListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@android:color/darker_gray"
         android:dividerHeight="0.5dp"
-        android:paddingTop="20dp" />
-
+        android:background="#FAFAFA"
+        android:layout_marginBottom="16dp" />
 
     <!-- Add/Edit Dog Layout -->
     <LinearLayout
@@ -69,18 +108,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:layout_marginTop="20dp">
+        android:background="#F5F5F5"
+        android:padding="16dp"
+        android:elevation="4dp"
+        android:visibility="gone">
 
         <!-- Dog Image Preview -->
         <ImageView
             android:id="@+id/dogImageView"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_placeholder"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:background="#E0E0E0"
+            android:padding="8dp" />
 
         <!-- Select Image Button -->
         <Button
@@ -89,6 +132,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Select Image"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF9800"
             android:layout_marginBottom="16dp" />
 
         <!-- Dog Name Input -->
@@ -97,8 +142,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Dog Name"
+            android:background="@drawable/edit_text_bg"
             android:layout_marginBottom="8dp" />
-
 
         <!-- Dog Breed Input -->
         <EditText
@@ -106,6 +151,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Breed"
+            android:background="@drawable/edit_text_bg"
             android:layout_marginBottom="8dp" />
 
         <!-- Dog Age Input -->
@@ -114,6 +160,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Age"
+            android:background="@drawable/edit_text_bg"
             android:layout_marginBottom="8dp" />
 
         <!-- Dog Description Input -->
@@ -122,6 +169,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Description"
+            android:background="@drawable/edit_text_bg"
             android:layout_marginBottom="16dp" />
 
         <!-- Save Dog Button -->
@@ -130,6 +178,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Save"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2196F3"
             android:layout_gravity="center" />
     </LinearLayout>
 </LinearLayout>

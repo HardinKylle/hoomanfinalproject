@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">hoomanfinalproject</string>
     <string-array name="user_types">
+        <item>Select User Type</item> <!-- This will act as the hint -->
         <item>Adopter</item>
         <item>Shelter</item>
     </string-array>

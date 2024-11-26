@@ -2,6 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="purple_500">#6200EE</color>
+        <color name="login_button_color">#D32F2F</color>
+        <color name="signup_button_color">#C2185B</color>
 
 </resources>
