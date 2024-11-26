@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
 
                 // Navigate to respective dashboard
-                if ("Normal".equals(userType)) {
+                if ("Adopter".equals(userType)) {
                     startActivity(new Intent(this, UserDashboardActivity.class));
                 } else if ("Shelter".equals(userType)) {
-                    startActivity(new Intent(this, ShelterDashboardActivity.class));
+                    startActivity(new Intent(this, ShelterProfileActivity.class));
                 }
             } else {
                 Toast.makeText(this, "Invalid Credentials", Toast.LENGTH_SHORT).show();

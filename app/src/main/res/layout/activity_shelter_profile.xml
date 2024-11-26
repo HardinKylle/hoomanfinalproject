@@ -1,64 +1,125 @@
-<!-- activity_shelter_dashboard.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dp">
 
+    <!-- Shelter Information -->
+    <TextView
+        android:id="@+id/shelterNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Shelter Name"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/shelterLocationTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Location"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/shelterUsernameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="18sp"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:id="@+id/shelterContactTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Contact: "
+        android:textSize="16sp"
+        android:paddingBottom="8dp" />
+
+    <!-- Add Dog Button -->
     <Button
         android:id="@+id/addDogButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Dog" />
+        android:text="Add Dog"
+        android:layout_marginTop="20dp" />
 
-    <Button
-        android:id="@+id/editDogButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Edit Dog" />
-
+    <!-- List of Dogs -->
     <ListView
         android:id="@+id/dogsListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="0.5dp"
+        android:paddingTop="20dp" />
 
+    <!-- Add/Edit Dog Layout -->
     <LinearLayout
         android:id="@+id/addDogLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_marginTop="20dp">
 
-        <!-- Input fields for adding dog profile -->
+        <!-- Dog Image Preview -->
+        <ImageView
+            android:id="@+id/dogImageView"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Select Image Button -->
+        <Button
+            android:id="@+id/selectImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Select Image"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Dog Name Input -->
         <EditText
             android:id="@+id/dogName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Dog Name" />
+            android:hint="Dog Name"
+            android:layout_marginBottom="8dp" />
 
+        <!-- Dog Breed Input -->
         <EditText
             android:id="@+id/dogBreed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Breed" />
+            android:hint="Breed"
+            android:layout_marginBottom="8dp" />
 
+        <!-- Dog Age Input -->
         <EditText
             android:id="@+id/dogAge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Age" />
+            android:hint="Age"
+            android:layout_marginBottom="8dp" />
 
+        <!-- Dog Description Input -->
         <EditText
             android:id="@+id/dogDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Description" />
+            android:hint="Description"
+            android:layout_marginBottom="16dp" />
 
-
-        <!-- Other input fields for adding dog details -->
+        <!-- Save Dog Button -->
         <Button
             android:id="@+id/saveDogButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Save" />
+            android:text="Save"
+            android:layout_gravity="center" />
     </LinearLayout>
 </LinearLayout>

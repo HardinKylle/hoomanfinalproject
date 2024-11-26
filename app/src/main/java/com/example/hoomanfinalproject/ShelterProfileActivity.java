@@ -1,32 +1,39 @@
 package com.example.hoomanfinalproject;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ShelterDashboardActivity extends AppCompatActivity {
-    private Button addDogButton, editDogButton;
+public class ShelterProfileActivity extends AppCompatActivity {
+    private Button addDogButton, saveDogButton, selectImageButton;
     private ListView dogsListView;
-    private ArrayAdapter<String> dogsAdapter;
-    private DatabaseHelper dbHelper;
     private LinearLayout addDogLayout;
     private EditText dogNameEditText, dogBreedEditText, dogAgeEditText, dogDescriptionEditText;
-    private Button saveDogButton;
+    private ImageView dogImageView;
+    private String dogImagePath = null; // To store the selected image path
+    private ArrayAdapter<String> dogsAdapter;
+    private DatabaseHelper dbHelper;
+    private TextView shelterNameTextView, shelterLocationTextView, shelterUsernameTextView, shelterContactTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shelter_dashboard);
+        setContentView(R.layout.activity_shelter_profile);
 
         dbHelper = new DatabaseHelper(this);
 
+        shelterNameTextView = findViewById(R.id.shelterNameTextView);
+        shelterLocationTextView = findViewById(R.id.shelterLocationTextView);
+        shelterUsernameTextView = findViewById(R.id.shelterUsernameTextView);
+        shelterContactTextView = findViewById(R.id.shelterContactTextView);
         addDogButton = findViewById(R.id.addDogButton);
-        editDogButton = findViewById(R.id.editDogButton);
         dogsListView = findViewById(R.id.dogsListView);
         addDogLayout = findViewById(R.id.addDogLayout);
         dogNameEditText = findViewById(R.id.dogName);
@@ -34,31 +41,27 @@ public class ShelterDashboardActivity extends AppCompatActivity {
         dogAgeEditText = findViewById(R.id.dogAge);
         dogDescriptionEditText = findViewById(R.id.dogDescription);
         saveDogButton = findViewById(R.id.saveDogButton);
+        dogImageView = findViewById(R.id.dogImageView);
+        selectImageButton = findViewById(R.id.selectImageButton);
 
-        // Display the list of dogs
+        loadShelterInfo();
         loadDogsList();
 
         addDogButton.setOnClickListener(v -> {
             addDogLayout.setVisibility(View.VISIBLE);
             dogsListView.setVisibility(View.GONE);
             addDogButton.setVisibility(View.GONE);
-            editDogButton.setVisibility(View.GONE);
         });
 
         saveDogButton.setOnClickListener(v -> saveDogProfile());
 
-        // On item click of list view, allow editing
-        dogsListView.setOnItemClickListener((parent, view, position, id) -> {
-            String selectedDog = (String) parent.getItemAtPosition(position);
-            editDogProfile(selectedDog);
-        });
+        selectImageButton.setOnClickListener(v -> selectImage());
     }
 
-    // Load dogs into list view filtered by the logged-in shelter
-    private void loadDogsList() {
-        // Get the logged-in shelter's username from SharedPreferences
-        String shelterUsername = getSharedPreferences("UserSession", MODE_PRIVATE)
-                .getString("username", null);
+// Inside loadShelterInfo method:
+
+    private void loadShelterInfo() {
+        String shelterUsername = getSharedPreferences("UserSession", MODE_PRIVATE).getString("username", null);
 
         if (shelterUsername == null) {
             Toast.makeText(this, "Error: No shelter logged in", Toast.LENGTH_SHORT).show();
@@ -66,109 +69,119 @@ public class ShelterDashboardActivity extends AppCompatActivity {
         }
 
         SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(DatabaseHelper.TABLE_USERS,
+                new String[]{
+                        DatabaseHelper.COLUMN_SHELTER_NAME,
+                        DatabaseHelper.COLUMN_SHELTER_LOCATION,
+                        DatabaseHelper.COLUMN_PHONE,   // Fetch phone number
+                        DatabaseHelper.COLUMN_EMAIL   // Fetch email
+                },
+                DatabaseHelper.COLUMN_USERNAME + "=?",
+                new String[]{shelterUsername}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            // Ensure column indexes are valid
+            int shelterNameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_SHELTER_NAME);
+            int shelterLocationIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_SHELTER_LOCATION);
+            int shelterPhoneIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE);
+            int shelterEmailIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_EMAIL);
+
+            if (shelterNameIndex != -1 && shelterLocationIndex != -1 && shelterPhoneIndex != -1 && shelterEmailIndex != -1) {
+                String shelterName = cursor.getString(shelterNameIndex);
+                String shelterLocation = cursor.getString(shelterLocationIndex);
+                String shelterPhone = cursor.getString(shelterPhoneIndex);
+                String shelterEmail = cursor.getString(shelterEmailIndex);
+
+                shelterNameTextView.setText("Shelter Name: " + shelterName);
+                shelterLocationTextView.setText("Location: " + shelterLocation);
+                shelterUsernameTextView.setText("Username: " + shelterUsername); // Could be email or username
+                shelterContactTextView.setText("Contact Info:\nPhone: " + shelterPhone + "\nEmail: " + shelterEmail);
+            } else {
+                Log.e("ShelterProfile", "Column index is invalid. Check column names in the query.");
+            }
+
+            cursor.close();
+        } else {
+            Toast.makeText(this, "Error loading shelter info", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void loadDogsList() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String shelterUsername = getSharedPreferences("UserSession", MODE_PRIVATE).getString("username", null);
+
+        if (shelterUsername == null) {
+            Toast.makeText(this, "Error: No shelter logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
-                new String[]{DatabaseHelper.COLUMN_DOG_NAME},
+                new String[]{DatabaseHelper.COLUMN_DOG_NAME, DatabaseHelper.COLUMN_DOG_IMAGE},
                 DatabaseHelper.COLUMN_SHELTER_USERNAME + "=?",
                 new String[]{shelterUsername}, null, null, null);
 
-        // Create an adapter with the dog names
-        dogsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        if (cursor != null && cursor.moveToFirst()) {
+            dogsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
 
-        // Check if the cursor is not null and contains data
-        if (cursor != null && cursor.getCount() > 0) {
-            int dogNameColumnIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME);
+            do {
+                String dogName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
+                String dogImage = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
+                dogsAdapter.add(dogName + (dogImage != null ? " 🐾" : "")); // Add emoji if image exists
+            } while (cursor.moveToNext());
 
-            // Ensure the column index is valid
-            if (dogNameColumnIndex >= 0) {
-                while (cursor.moveToNext()) {
-                    String dogName = cursor.getString(dogNameColumnIndex);
-                    dogsAdapter.add(dogName);
-                }
-            } else {
-                Log.e("ShelterDashboard", "COLUMN_DOG_NAME not found in cursor");
-            }
-        } else {
-            Log.e("ShelterDashboard", "No dogs found in database or cursor is null");
-        }
-
-        dogsListView.setAdapter(dogsAdapter);
-        if (cursor != null) {
+            dogsListView.setAdapter(dogsAdapter);
             cursor.close();
         }
     }
 
-    // Save or update a dog profile and associate it with the shelter
+    private void selectImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, 100);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            Uri imageUri = data.getData();
+            dogImageView.setImageURI(imageUri);
+            dogImagePath = imageUri.toString();
+        }
+    }
+
     private void saveDogProfile() {
         String name = dogNameEditText.getText().toString().trim();
         String breed = dogBreedEditText.getText().toString().trim();
         String age = dogAgeEditText.getText().toString().trim();
         String description = dogDescriptionEditText.getText().toString().trim();
 
-        if (name.isEmpty() || breed.isEmpty() || age.isEmpty() || description.isEmpty()) {
-            Toast.makeText(this, "All fields must be filled out", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || breed.isEmpty() || age.isEmpty() || description.isEmpty() || dogImagePath == null) {
+            Toast.makeText(this, "All fields must be filled, including the image", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Get the logged-in shelter's username from SharedPreferences
-        String shelterUsername = getSharedPreferences("UserSession", MODE_PRIVATE)
-                .getString("username", null);
+        String shelterUsername = getSharedPreferences("UserSession", MODE_PRIVATE).getString("username", null);
 
-        if (shelterUsername == null) {
-            Toast.makeText(this, "Error: No shelter logged in", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Insert or update the dog data, associating it with the shelter
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_DOG_NAME, name);
         values.put(DatabaseHelper.COLUMN_DOG_BREED, breed);
         values.put(DatabaseHelper.COLUMN_DOG_AGE, age);
         values.put(DatabaseHelper.COLUMN_DOG_DESCRIPTION, description);
-        values.put(DatabaseHelper.COLUMN_SHELTER_USERNAME, shelterUsername);  // Associate dog with shelter
+        values.put(DatabaseHelper.COLUMN_DOG_IMAGE, dogImagePath);
+        values.put(DatabaseHelper.COLUMN_SHELTER_USERNAME, shelterUsername);
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         long result = db.insert(DatabaseHelper.TABLE_DOGS, null, values);
 
         if (result != -1) {
             Toast.makeText(this, "Dog profile saved", Toast.LENGTH_SHORT).show();
-            loadDogsList(); // Refresh the dog list
             addDogLayout.setVisibility(View.GONE);
             dogsListView.setVisibility(View.VISIBLE);
             addDogButton.setVisibility(View.VISIBLE);
-            editDogButton.setVisibility(View.VISIBLE);
+            loadDogsList();
         } else {
             Toast.makeText(this, "Error saving dog profile", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    // Edit dog profile (this would pre-fill the fields with existing dog data)
-    private void editDogProfile(String dogName) {
-        // Retrieve dog details and fill the form to allow editing
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
-                new String[]{DatabaseHelper.COLUMN_DOG_NAME, DatabaseHelper.COLUMN_DOG_BREED, DatabaseHelper.COLUMN_DOG_AGE, DatabaseHelper.COLUMN_DOG_DESCRIPTION},
-                DatabaseHelper.COLUMN_DOG_NAME + "=?", new String[]{dogName}, null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            int nameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME);
-            int breedIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED);
-            int ageIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE);
-            int descriptionIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION);
-
-            // Ensure the column index is valid
-            if (nameIndex >= 0) dogNameEditText.setText(cursor.getString(nameIndex));
-            if (breedIndex >= 0) dogBreedEditText.setText(cursor.getString(breedIndex));
-            if (ageIndex >= 0) dogAgeEditText.setText(cursor.getString(ageIndex));
-            if (descriptionIndex >= 0) dogDescriptionEditText.setText(cursor.getString(descriptionIndex));
-        }
-
-        if (cursor != null) {
-            cursor.close();
-        }
-
-        addDogLayout.setVisibility(View.VISIBLE);
-        dogsListView.setVisibility(View.GONE);
-        addDogButton.setVisibility(View.GONE);
-        editDogButton.setVisibility(View.GONE);
     }
 }

@@ -2,61 +2,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:padding="16dp">
 
-    <!-- Username Input -->
+    <!-- Username Field -->
     <EditText
         android:id="@+id/username"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Enter Username"
-        android:inputType="text"
+        android:layout_height="wrap_content"
+        android:hint="Username"
         android:layout_marginBottom="16dp" />
 
-    <!-- Password Input -->
+    <!-- Password Field -->
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Enter Password"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:layout_marginBottom="16dp"
+        android:inputType="textPassword" />
 
-    <!-- User Type Spinner -->
+    <!-- Email Field (new) -->
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:layout_marginBottom="16dp"
+        android:inputType="textEmailAddress" />
+
+    <!-- Phone Field (new) -->
+    <EditText
+        android:id="@+id/phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Phone Number"
+        android:layout_marginBottom="16dp"
+        android:inputType="phone" />
+
+    <!-- User Type Spinner (Adopter/Shelter) -->
     <Spinner
         android:id="@+id/userTypeSpinner"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
-        android:entries="@array/user_types" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp" />
 
-    <!-- Normal User Additional Info -->
+    <!-- Layout for Adopter User Fields -->
     <LinearLayout
-        android:id="@+id/normalUserLayout"
+        android:id="@+id/adopterUserLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone">
 
+        <!-- Age Field for adopter User -->
         <EditText
             android:id="@+id/age"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter Age"
-            android:inputType="number"
+            android:layout_height="wrap_content"
+            android:hint="Age"
             android:layout_marginBottom="16dp" />
 
+        <!-- Address Field for adopter User -->
         <EditText
             android:id="@+id/address"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter Address"
-            android:inputType="text"
+            android:layout_height="wrap_content"
+            android:hint="Address"
             android:layout_marginBottom="16dp" />
     </LinearLayout>
 
-    <!-- Shelter Account Additional Info -->
+    <!-- Layout for Shelter Fields -->
     <LinearLayout
         android:id="@+id/shelterLayout"
         android:layout_width="match_parent"
@@ -64,29 +79,29 @@
         android:orientation="vertical"
         android:visibility="gone">
 
+        <!-- Shelter Name Field -->
         <EditText
             android:id="@+id/shelterName"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter Shelter Name"
-            android:inputType="text"
+            android:layout_height="wrap_content"
+            android:hint="Shelter Name"
             android:layout_marginBottom="16dp" />
 
+        <!-- Shelter Location Field -->
         <EditText
             android:id="@+id/shelterLocation"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Enter Shelter Location"
-            android:inputType="text"
+            android:layout_height="wrap_content"
+            android:hint="Shelter Location"
             android:layout_marginBottom="16dp" />
     </LinearLayout>
 
     <!-- Sign-Up Button -->
     <Button
         android:id="@+id/signupButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Sign Up"
-        android:backgroundTint="@color/purple_500"
-        android:textColor="@android:color/white" />
+        android:layout_marginTop="20dp" />
+
 </LinearLayout>
