@@ -1,48 +1,67 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- item_dog.xml -->
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_marginBottom="16dp"
+    android:radius="8dp"
     android:padding="16dp">
 
-    <!-- Dog Image -->
-    <ImageView
-        android:id="@+id/dogImage"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:src="@drawable/ic_placeholder"
-        android:contentDescription="Dog Image" />
+        android:layout_height="wrap_content">
 
-    <!-- Dog Name -->
-    <TextView
-        android:id="@+id/dogName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dog Name"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/dogImageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_placeholder"
+            android:layout_marginEnd="16dp"/>
 
-    <!-- Dog Breed -->
-    <TextView
-        android:id="@+id/dogBreed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Breed"
-        android:textSize="16sp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
 
-    <!-- Dog Description -->
-    <TextView
-        android:id="@+id/dogDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dog Description"
-        android:textSize="14sp" />
+            <TextView
+                android:id="@+id/dogNameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dog Name"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
 
-    <!-- Interested Button -->
-    <Button
-        android:id="@+id/interestButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Interested"
-        android:layout_marginTop="8dp"/>
-</LinearLayout>
+            <TextView
+                android:id="@+id/dogBreedTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Breed: Unknown"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/dogAgeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Age: Unknown"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/dogDescriptionTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description: N/A"
+                android:textSize="14sp"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+
+            <TextView
+                android:id="@+id/dogShelterTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Shelter: Unknown"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"/>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,38 +1,44 @@
 package com.example.hoomanfinalproject;
 
 public class Dog {
+    private String name;
+    private String breed;
+    private String age;
+    private String description;
+    private String imagePath;
+    private String shelterName;
 
-    private int dogId;
-    private String dogName;
-    private String dogBreed;
-    private String dogDescription;
-    private String dogImage;
-
-    public Dog(int dogId, String dogName, String dogBreed, String dogDescription, String dogImage, String image) {
-        this.dogId = dogId;
-        this.dogName = dogName;
-        this.dogBreed = dogBreed;
-        this.dogDescription = dogDescription;
-        this.dogImage = dogImage;
+    // Constructor, getters, and setters
+    public Dog(String name, String breed, String age, String description, String imagePath, String shelterName) {
+        this.name = name;
+        this.breed = breed;
+        this.age = age;
+        this.description = description;
+        this.imagePath = imagePath;
+        this.shelterName = shelterName;
     }
 
-    public int getDogId() {
-        return dogId;
+    public String getName() {
+        return name;
     }
 
-    public String getDogName() {
-        return dogName;
+    public String getBreed() {
+        return breed;
     }
 
-    public String getDogBreed() {
-        return dogBreed;
+    public String getAge() {
+        return age;
     }
 
-    public String getDogDescription() {
-        return dogDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public String getDogImage() {
-        return dogImage;
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public String getShelterName() {
+        return shelterName;
     }
 }

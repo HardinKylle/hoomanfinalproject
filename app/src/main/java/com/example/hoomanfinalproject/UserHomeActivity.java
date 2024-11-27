@@ -1,74 +1,64 @@
 package com.example.hoomanfinalproject;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class UserHomeActivity extends AppCompatActivity {
-
-    private RecyclerView dogRecyclerView;
-    private DogAdapter dogAdapter;
+    private RecyclerView dogsRecyclerView;
+    private DogAdapter dogsAdapter;
+    private List<Dog> dogsList;
     private DatabaseHelper dbHelper;
-    private ArrayList<Dog> dogList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_home);
 
-        dogRecyclerView = findViewById(R.id.dogRecyclerView);
         dbHelper = new DatabaseHelper(this);
-        dogList = new ArrayList<>();
+        dogsRecyclerView = findViewById(R.id.dogsRecyclerView);
+        dogsList = new ArrayList<>();
 
-        // Fetch adoptable dogs from the database
-        fetchDogs();
+        // Load adoptable dogs from multiple shelters
+        loadAdoptableDogs();
 
-        // Set up RecyclerView
-        dogRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        dogAdapter = new DogAdapter(dogList, this);
-        dogRecyclerView.setAdapter(dogAdapter);
+        dogsAdapter = new DogAdapter(dogsList, this);
+        dogsRecyclerView.setAdapter(dogsAdapter);
     }
 
-    private void fetchDogs() {
+    private void loadAdoptableDogs() {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS, null, null, null, null, null, null);
+        Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
+                new String[]{DatabaseHelper.COLUMN_DOG_NAME, DatabaseHelper.COLUMN_DOG_BREED,
+                        DatabaseHelper.COLUMN_DOG_AGE, DatabaseHelper.COLUMN_DOG_DESCRIPTION,
+                        DatabaseHelper.COLUMN_DOG_IMAGE, DatabaseHelper.COLUMN_SHELTER_USERNAME},
+                null, null, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                int dogId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_ID));
-                String dogName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
-                String dogBreed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
-                String dogAge = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
-                String dogDescription = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
-                String dogImage = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
+                String name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
+                String breed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
+                String age = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
+                String description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
+                String imagePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
+                String shelterName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_SHELTER_USERNAME));
 
-                dogList.add(new Dog(dogId, dogName, dogBreed, dogAge, dogDescription, dogImage));
+                dogsList.add(new Dog(name, breed, age, description, imagePath, shelterName));
             } while (cursor.moveToNext());
 
             cursor.close();
-        }
-    }
-
-    public void markAsInterested(Dog dog) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("dog_id", dog.getDogId());
-
-        long result = db.insert("interested_dogs", null, values);
-        if (result != -1) {
-            Toast.makeText(this, "Marked as Interested", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Failed to mark as Interested", Toast.LENGTH_SHORT).show();
         }
     }
 }
