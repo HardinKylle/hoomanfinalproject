@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent;
                 if ("Adopter".equals(userType)) {
                     intent = new Intent(this, UserHomeActivity.class);
+                    intent.putExtra("username", username); // Add this line to pass the username
                 } else if ("Shelter".equals(userType)) {
                     // Pass shelterUsername to ShelterProfileActivity directly
                     intent = new Intent(this, ShelterProfileActivity.class);

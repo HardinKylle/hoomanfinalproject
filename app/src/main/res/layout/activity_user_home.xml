@@ -5,6 +5,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/profileIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_profile"
+        android:contentDescription="Profile Icon"
+        android:clickable="true"
+        android:focusable="true" />
     <!-- Dog Image -->
     <ImageView
         android:id="@+id/dogImageView"
@@ -53,12 +65,5 @@
         android:text="Next Dog"
         android:layout_gravity="center" />
 
-    <!-- Logout Button -->
-    <Button
-        android:id="@+id/logoutButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:layout_alignParentBottom="true" />
 
 </LinearLayout>

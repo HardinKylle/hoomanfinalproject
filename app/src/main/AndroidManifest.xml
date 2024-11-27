@@ -29,6 +29,8 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".ShelterProfileActivity" />
         <activity android:name=".UserHomeActivity" />
+        <activity android:name=".UserProfileActivity">
+        </activity>
 
 
     </application>

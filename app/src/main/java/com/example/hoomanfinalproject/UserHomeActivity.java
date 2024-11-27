@@ -40,8 +40,6 @@
             dbHelper = new DatabaseHelper(this);
             dogsList = new ArrayList<>();
 
-
-
             dogNameTextView = findViewById(R.id.dogNameTextView);
             dogBreedTextView = findViewById(R.id.dogBreedTextView);
             dogAgeTextView = findViewById(R.id.dogAgeTextView);
@@ -70,10 +68,29 @@
                 displayDog(currentDogIndex);
             });
 
-            // Logout Button setup
-            Button logoutButton = findViewById(R.id.logoutButton);
-            logoutButton.setOnClickListener(v -> logout());
+            // Set up the Profile Icon click listener
+            ImageView profileIcon = findViewById(R.id.profileIcon);
+            profileIcon.setOnClickListener(v -> openUserProfile());
+
+
         }
+
+        private void openUserProfile() {
+            // Retrieve the logged-in username
+            Intent intent = getIntent();
+            String username = intent.getStringExtra("username");
+
+            if (username != null) {
+                // Pass the username to UserProfileActivity
+                Intent profileIntent = new Intent(UserHomeActivity.this, UserProfileActivity.class);
+                profileIntent.putExtra("username", username);
+                startActivity(profileIntent); // Starts the UserProfileActivity
+            } else {
+                // Handle the case where username is null
+                Toast.makeText(this, "Error: User session not found.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
 
         private void loadAdoptableDogs() {
             SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -121,11 +138,6 @@
             }
         }
 
-        private void logout() {
-            // Logout functionality: Redirect to login page
-            Intent loginIntent = new Intent(UserHomeActivity.this, MainActivity.class);
-            startActivity(loginIntent); // Starts the login activity
-            finish();  // Finish the current activity to remove it from the back stack
-        }
+
     }
 
