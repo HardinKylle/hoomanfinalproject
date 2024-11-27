@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#F5F5F5"
+            android:background="#F4F4F4"
             android:padding="16dp"
             android:elevation="4dp"
             android:layout_marginBottom="16dp">
@@ -28,7 +28,8 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#000000"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="8dp"
+                android:gravity="center"/>
 
             <!-- Shelter Location -->
             <TextView
@@ -38,7 +39,7 @@
                 android:text="Location"
                 android:textSize="16sp"
                 android:textColor="#555555"
-                android:paddingBottom="4dp" />
+                android:layout_marginBottom="13dp"/>
 
             <!-- Shelter Username -->
             <TextView
@@ -48,7 +49,7 @@
                 android:text="Username"
                 android:textSize="16sp"
                 android:textColor="#555555"
-                android:paddingBottom="4dp" />
+                android:layout_marginBottom="13dp" />
 
             <!-- Contact Information -->
             <TextView
@@ -68,7 +69,7 @@
             android:gravity="center"
             android:layout_marginBottom="16dp">
 
-            <!-- Add Dog Button -->
+            <!-- Add Dog Button (slightly left) -->
             <Button
                 android:id="@+id/addDogButton"
                 android:layout_width="wrap_content"
@@ -76,16 +77,32 @@
                 android:text="Add Dog"
                 android:backgroundTint="#4CAF50"
                 android:textColor="#FFFFFF"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"/>
 
-            <!-- Logout Button -->
+            <!-- Message Button (centered between Add Dog and Logout) -->
+            <Button
+                android:id="@+id/messageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Messages"
+                android:backgroundTint="#FFC107"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+            <!-- Logout Button (slightly left) -->
             <Button
                 android:id="@+id/logoutButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Logout"
-                android:backgroundTint="#F44336"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#000000"
+                android:textColor="#FFFFFF"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"/>
+
         </LinearLayout>
 
         <!-- List of Dogs -->
@@ -96,15 +113,15 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:layout_marginBottom="8dp"
-            android:textColor="#000000" />
+            android:textColor="@color/primaryColor"
+            android:padding="8dp"
+            android:background="#F4F4F4"/>
 
         <ListView
             android:id="@+id/dogsListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="0.5dp"
-            android:background="#FAFAFA"
+            android:background="#FBE5DC"
             android:layout_marginBottom="16dp" />
 
         <!-- Add/Edit Dog Layout -->

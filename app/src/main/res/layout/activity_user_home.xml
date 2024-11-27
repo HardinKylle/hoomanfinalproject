@@ -128,13 +128,17 @@
                     android:layout_marginStart="14dp"/>
 
                 <!-- Interested Button -->
+
+                <!-- Message Button -->
+
+                <!-- Next Button -->
                 <Button
                     android:id="@+id/interestedButton"
                     android:layout_width="120dp"
                     android:layout_height="35dp"
                     android:layout_below="@id/dogShelterTextView"
                     android:layout_alignParentStart="true"
-                    android:layout_marginStart="14dp"
+                    android:layout_marginStart="8dp"
                     android:layout_marginTop="22dp"
                     android:layout_marginBottom="12dp"
                     android:background="@drawable/button_background_orange"
@@ -142,7 +146,21 @@
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />
 
-                <!-- Next Button -->
+                <ImageButton
+                    android:id="@+id/messageButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@id/dogNameTextView"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginTop="-8dp"
+                    android:src="@drawable/message"
+                    android:background="?attr/selectableItemBackground"
+                    android:contentDescription="Message Button"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+
                 <Button
                     android:id="@+id/nextButton"
                     android:layout_width="120dp"
@@ -152,10 +170,11 @@
                     android:layout_marginTop="-48dp"
                     android:layout_marginEnd="14dp"
                     android:layout_marginBottom="20dp"
-                    android:background="@drawable/button_background_light_orange"
+                    android:background="@drawable/button_background_yellow"
                     android:text="Next Dog"
                     android:textColor="#FFFFFF"
                     android:textSize="16sp" />
+
             </RelativeLayout>
         </androidx.cardview.widget.CardView>
 

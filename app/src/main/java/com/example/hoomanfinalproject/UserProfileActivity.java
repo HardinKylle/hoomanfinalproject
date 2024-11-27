@@ -78,10 +78,10 @@ public class UserProfileActivity extends AppCompatActivity {
             String phoneValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE));
             String emailValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EMAIL));
 
-            usernameTextView.setText("Username: " + usernameValue);
+            usernameTextView.setText(usernameValue);
             ageTextView.setText("Age: " + ageValue);
             addressTextView.setText("Address: " + addressValue);
-            contactInfoTextView.setText("Contact Info:\nPhone: " + phoneValue + "\nEmail: " + emailValue);
+            contactInfoTextView.setText("Phone: " + phoneValue + "\n\nEmail: " + emailValue);
 
             cursor.close();
         } else {

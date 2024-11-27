@@ -70,7 +70,6 @@
             ImageView profileIcon = findViewById(R.id.profileIcon);
             profileIcon.setOnClickListener(v -> openUserProfile());
 
-
         }
 
         private void markDogAsInterested() {

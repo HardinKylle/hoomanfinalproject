@@ -118,7 +118,7 @@ public class ShelterProfileActivity extends AppCompatActivity {
                 shelterNameTextView.setText(shelterName);
                 shelterLocationTextView.setText("Location: " + shelterLocation);
                 shelterUsernameTextView.setText("Username: " + shelterUsername);
-                shelterContactTextView.setText("Contact Info:\n Phone: " + shelterPhone + "\n Email: " + shelterEmail);
+                shelterContactTextView.setText("Phone: " + shelterPhone + "\n\nEmail: " + shelterEmail);
             }
 
             cursor.close();
