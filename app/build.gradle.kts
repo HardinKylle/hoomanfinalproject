@@ -33,7 +33,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.material.v190) // Use the latest version
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

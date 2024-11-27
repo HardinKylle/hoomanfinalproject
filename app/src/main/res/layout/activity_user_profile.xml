@@ -35,14 +35,6 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/userTypeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Type: "
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
             android:id="@+id/contactInfoTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -68,8 +60,8 @@
         <ListView
             android:id="@+id/interestedDogsListView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:dividerHeight="1dp"
+            android:layout_height="400dp"
+            android:dividerHeight="10dp"
             android:divider="#cccccc"
             android:padding="8dp" />
 

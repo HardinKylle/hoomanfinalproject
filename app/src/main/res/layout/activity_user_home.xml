@@ -1,105 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FFFFFF">
+    android:background="#FBE5DC">
 
     <!-- Profile Icon in Top Right -->
+
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="176dp"
+        android:layout_height="59dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/hooman_logo2" />
+
     <ImageView
         android:id="@+id/profileIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_profile"
-        android:contentDescription="Profile Icon"
+        android:layout_alignParentEnd="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="5dp"
         android:clickable="true"
-        android:focusable="true" />
+        android:contentDescription="Profile Icon"
+        android:focusable="true"
+        android:src="@drawable/ic_profile" />
 
-    <!-- Dog Image -->
-    <ImageView
-        android:id="@+id/dogImageView"
+    <!-- ScrollView to make the layout scrollable -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_placeholder"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/profileIcon"
+        >
 
-    <!-- Dog Name -->
-    <TextView
-        android:id="@+id/dogNameTextView"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Name: Dog Name"
-    android:textSize="20sp"
-    android:textColor="#000000"
-    android:layout_marginBottom="4dp"/>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/dogCardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp">
 
-    <!-- Dog Breed -->
-    <TextView
-        android:id="@+id/dogBreedTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Breed: Dog Breed"
-        android:textSize="16sp"
-        android:textColor="#4A4A4A"
-        android:layout_marginBottom="4dp"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
-    <!-- Dog Age -->
-    <TextView
-        android:id="@+id/dogAgeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Age: Dog Age"
-        android:textSize="16sp"
-        android:textColor="#4A4A4A"
-        android:layout_marginBottom="4dp"/>
+                <!-- Dog Image -->
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/dogImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_placeholder"
+                    app:shapeAppearanceOverlay="@style/RoundedCornerImage" />
 
-    <!-- Dog Description -->
-    <TextView
-        android:id="@+id/dogDescriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description: Dog Description"
-        android:textSize="16sp"
-        android:textColor="#4A4A4A"
-        android:layout_marginBottom="4dp"/>
+                <!-- Dog Name -->
+                <TextView
+                    android:id="@+id/dogNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dog Name"
+                    android:textSize="24sp"
+                    android:textColor="#000000"
+                    android:layout_below="@id/dogImageView"
+                    android:layout_marginTop="10dp"
+                    android:layout_centerHorizontal="true"/>
 
-    <!-- Dog Shelter -->
-    <TextView
-        android:id="@+id/dogShelterTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Shelter: Dog Shelter"
-        android:textSize="16sp"
-        android:textColor="#4A4A4A"
-        android:layout_marginBottom="16dp"/>
+                <!-- Dog Breed -->
+                <TextView
+                    android:id="@+id/dogBreedTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Breed: Dog Breed"
+                    android:textSize="18sp"
+                    android:textColor="#0B0A0A"
+                    android:layout_below="@id/dogNameTextView"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="14dp"
+                    />
 
-    <!-- Interested Button -->
-    <Button
-        android:id="@+id/interestedButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="Interested"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/button_background_orange"
-        android:layout_marginBottom="16dp"/>
+                <!-- Dog Age -->
+                <TextView
+                    android:id="@+id/dogAgeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Age: Dog Age"
+                    android:textSize="18sp"
+                    android:textColor="#000000"
+                    android:layout_below="@id/dogBreedTextView"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="14dp"
+                    />
 
-    <!-- Next Button -->
-    <Button
-        android:id="@+id/nextButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="Next Dog"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:background="@drawable/button_background_light_orange"/>
+                <!-- Dog Description -->
+                <TextView
+                    android:id="@+id/dogDescriptionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description: Dog Description"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:layout_below="@id/dogAgeTextView"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="14dp"
+                    />
 
-</LinearLayout>
+                <!-- Dog Shelter -->
+                <TextView
+                    android:id="@+id/dogShelterTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shelter: Dog Shelter"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:layout_below="@id/dogDescriptionTextView"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginStart="14dp"/>
+
+                <!-- Interested Button -->
+                <Button
+                    android:id="@+id/interestedButton"
+                    android:layout_width="120dp"
+                    android:layout_height="35dp"
+                    android:layout_below="@id/dogShelterTextView"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/button_background_orange"
+                    android:text="Interested!"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+
+                <!-- Next Button -->
+                <Button
+                    android:id="@+id/nextButton"
+                    android:layout_width="120dp"
+                    android:layout_height="35dp"
+                    android:layout_below="@id/interestedButton"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="-48dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/button_background_light_orange"
+                    android:text="Next Dog"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+        </androidx.cardview.widget.CardView>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

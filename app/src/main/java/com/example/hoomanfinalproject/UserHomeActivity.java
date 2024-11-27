@@ -74,7 +74,7 @@
         }
 
         private void markDogAsInterested() {
-            // Get the currently displayed dog's ID (index in this example)
+            // Get the currently displayed dog's ID
             Dog currentDog = dogsList.get(currentDogIndex);
 
             // Retrieve the logged-in user's ID
@@ -93,23 +93,41 @@
                 int userId = cursor.getInt(cursor.getColumnIndex(DatabaseHelper.COLUMN_ID));
                 cursor.close();
 
-                // Insert into the interested_dogs table
-                SQLiteDatabase writeDb = dbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put("user_id", userId); // Foreign key: User ID
-                values.put("dog_id", currentDog.getDogId()); // Foreign key: Dog ID
+                // Check if the combination of user_id and dog_id already exists
+                Cursor checkCursor = db.query("interested_dogs",
+                        new String[]{"user_id", "dog_id"},
+                        "user_id = ? AND dog_id = ?",
+                        new String[]{String.valueOf(userId), String.valueOf(currentDog.getDogId())},
+                        null, null, null);
 
-                long result = writeDb.insert("interested_dogs", null, values);
-
-                if (result != -1) {
-                    Toast.makeText(this, "Marked as Interested!", Toast.LENGTH_SHORT).show();
+                if (checkCursor != null && checkCursor.moveToFirst()) {
+                    // Record already exists
+                    Toast.makeText(this, "You have already marked this dog as interested!", Toast.LENGTH_SHORT).show();
+                    checkCursor.close();
                 } else {
-                    Toast.makeText(this, "Failed to mark interest.", Toast.LENGTH_SHORT).show();
+                    // Record does not exist; proceed with insertion
+                    SQLiteDatabase writeDb = dbHelper.getWritableDatabase();
+                    ContentValues values = new ContentValues();
+                    values.put("user_id", userId); // Foreign key: User ID
+                    values.put("dog_id", currentDog.getDogId()); // Foreign key: Dog ID
+
+                    long result = writeDb.insert("interested_dogs", null, values);
+
+                    if (result != -1) {
+                        Toast.makeText(this, "Marked as Interested!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Failed to mark interest.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                if (checkCursor != null) {
+                    checkCursor.close();
                 }
             } else {
                 Toast.makeText(this, "Error: Unable to retrieve user info.", Toast.LENGTH_SHORT).show();
             }
         }
+
 
         private void openUserProfile() {
             // Retrieve the logged-in username

@@ -40,7 +40,6 @@ public class UserProfileActivity extends AppCompatActivity {
         usernameTextView = findViewById(R.id.usernameTextView);
         ageTextView = findViewById(R.id.ageTextView);
         addressTextView = findViewById(R.id.addressTextView);
-        userTypeTextView = findViewById(R.id.userTypeTextView);
         contactInfoTextView = findViewById(R.id.contactInfoTextView);
         interestedDogsHeader = findViewById(R.id.interestedDogsHeader); // Initialize header
         logoutButton = findViewById(R.id.logoutButton);
@@ -76,14 +75,12 @@ public class UserProfileActivity extends AppCompatActivity {
             String usernameValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USERNAME));
             String ageValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_AGE));
             String addressValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ADDRESS));
-            String userTypeValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
             String phoneValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE));
             String emailValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EMAIL));
 
             usernameTextView.setText("Username: " + usernameValue);
             ageTextView.setText("Age: " + ageValue);
             addressTextView.setText("Address: " + addressValue);
-            userTypeTextView.setText("User Type: " + userTypeValue);
             contactInfoTextView.setText("Contact Info:\nPhone: " + phoneValue + "\nEmail: " + emailValue);
 
             cursor.close();
