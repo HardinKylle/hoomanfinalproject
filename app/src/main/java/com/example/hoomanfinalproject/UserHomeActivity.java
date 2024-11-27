@@ -1,64 +1,131 @@
-package com.example.hoomanfinalproject;
+    package com.example.hoomanfinalproject;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+    import android.content.ContentValues;
+    import android.content.Intent;
+    import android.database.Cursor;
+    import android.database.sqlite.SQLiteDatabase;
+    import android.net.Uri;
+    import android.os.Bundle;
+    import android.view.View;
+    import android.widget.Button;
+    import android.widget.ImageView;
+    import android.widget.TextView;
+    import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+    import androidx.appcompat.app.AppCompatActivity;
+    import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.List;
+    import java.io.File;
+    import java.util.ArrayList;
+    import java.util.List;
 
-public class UserHomeActivity extends AppCompatActivity {
-    private RecyclerView dogsRecyclerView;
-    private DogAdapter dogsAdapter;
-    private List<Dog> dogsList;
-    private DatabaseHelper dbHelper;
+    import java.util.Collections;
+    import java.util.List;
+    import java.util.Random;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_home);
+    public class UserHomeActivity extends AppCompatActivity {
+        private int currentDogIndex = 0; // To keep track of the currently displayed dog
+        private List<Dog> dogsList;
+        private DatabaseHelper dbHelper;
 
-        dbHelper = new DatabaseHelper(this);
-        dogsRecyclerView = findViewById(R.id.dogsRecyclerView);
-        dogsList = new ArrayList<>();
+        private TextView dogNameTextView, dogBreedTextView, dogAgeTextView, dogDescriptionTextView, dogShelterTextView;
+        private ImageView dogImageView;
+        private Button nextButton;
 
-        // Load adoptable dogs from multiple shelters
-        loadAdoptableDogs();
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_user_home);
 
-        dogsAdapter = new DogAdapter(dogsList, this);
-        dogsRecyclerView.setAdapter(dogsAdapter);
-    }
+            dbHelper = new DatabaseHelper(this);
+            dogsList = new ArrayList<>();
 
-    private void loadAdoptableDogs() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
-                new String[]{DatabaseHelper.COLUMN_DOG_NAME, DatabaseHelper.COLUMN_DOG_BREED,
-                        DatabaseHelper.COLUMN_DOG_AGE, DatabaseHelper.COLUMN_DOG_DESCRIPTION,
-                        DatabaseHelper.COLUMN_DOG_IMAGE, DatabaseHelper.COLUMN_SHELTER_USERNAME},
-                null, null, null, null, null);
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                String name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
-                String breed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
-                String age = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
-                String description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
-                String imagePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
-                String shelterName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_SHELTER_USERNAME));
 
-                dogsList.add(new Dog(name, breed, age, description, imagePath, shelterName));
-            } while (cursor.moveToNext());
+            dogNameTextView = findViewById(R.id.dogNameTextView);
+            dogBreedTextView = findViewById(R.id.dogBreedTextView);
+            dogAgeTextView = findViewById(R.id.dogAgeTextView);
+            dogDescriptionTextView = findViewById(R.id.dogDescriptionTextView);
+            dogShelterTextView = findViewById(R.id.dogShelterTextView);
+            dogImageView = findViewById(R.id.dogImageView);
+            nextButton = findViewById(R.id.nextButton);
 
-            cursor.close();
+            // Load adoptable dogs from multiple shelters
+            loadAdoptableDogs();
+
+            // Shuffle the dogs list to randomize the order
+            Collections.shuffle(dogsList);
+
+            // Randomly select the initial dog index
+            Random random = new Random();
+            currentDogIndex = random.nextInt(dogsList.size());
+
+            // Display the first dog (which is now randomized)
+            displayDog(currentDogIndex);
+
+            // Set the "Next" button click listener
+            nextButton.setOnClickListener(v -> {
+                // Increment the index and wrap around if it's the last dog
+                currentDogIndex = (currentDogIndex + 1) % dogsList.size();
+                displayDog(currentDogIndex);
+            });
+
+            // Logout Button setup
+            Button logoutButton = findViewById(R.id.logoutButton);
+            logoutButton.setOnClickListener(v -> logout());
+        }
+
+        private void loadAdoptableDogs() {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            Cursor cursor = db.query(DatabaseHelper.TABLE_DOGS,
+                    new String[]{DatabaseHelper.COLUMN_DOG_NAME, DatabaseHelper.COLUMN_DOG_BREED,
+                            DatabaseHelper.COLUMN_DOG_AGE, DatabaseHelper.COLUMN_DOG_DESCRIPTION,
+                            DatabaseHelper.COLUMN_DOG_IMAGE, DatabaseHelper.COLUMN_SHELTER_USERNAME},
+                    null, null, null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    String name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
+                    String breed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
+                    String age = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
+                    String description = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_DESCRIPTION));
+                    String imagePath = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_IMAGE));
+                    String shelterName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_SHELTER_USERNAME));
+
+                    dogsList.add(new Dog(name, breed, age, description, imagePath, shelterName));
+                } while (cursor.moveToNext());
+
+                cursor.close();
+            }
+        }
+
+        private void displayDog(int index) {
+            if (dogsList != null && !dogsList.isEmpty()) {
+                Dog dog = dogsList.get(index);
+
+                // Update the UI with the dog's details
+                dogNameTextView.setText(dog.getName());
+                dogBreedTextView.setText("Breed: " + dog.getBreed());
+                dogAgeTextView.setText("Age: " + dog.getAge());
+                dogDescriptionTextView.setText("Description: " + dog.getDescription());
+                dogShelterTextView.setText("Shelter: " + dog.getShelterName());
+
+                // Set the image
+                if (dog.getImagePath() != null && !dog.getImagePath().isEmpty()) {
+                    File imgFile = new File(dog.getImagePath());
+                    if (imgFile.exists()) {
+                        Uri imageUri = Uri.fromFile(imgFile);
+                        dogImageView.setImageURI(imageUri);
+                    }
+                }
+            }
+        }
+
+        private void logout() {
+            // Logout functionality: Redirect to login page
+            Intent loginIntent = new Intent(UserHomeActivity.this, MainActivity.class);
+            startActivity(loginIntent); // Starts the login activity
+            finish();  // Finish the current activity to remove it from the back stack
         }
     }
-}
+
