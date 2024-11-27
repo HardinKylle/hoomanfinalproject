@@ -58,8 +58,9 @@
             android:text="Interested Dogs"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/white"
             android:padding="8dp"
-            android:background="#EAEAEA"
+            android:background="#000000"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="8dp" />
 
@@ -79,7 +80,7 @@
             android:layout_height="wrap_content"
             android:text="Logout"
             android:layout_marginTop="24dp"
-            android:backgroundTint="@color/design_default_color_primary"
+            android:background="@drawable/button_background_orange"
             android:textColor="@android:color/white" />
     </LinearLayout>
 </ScrollView>
