@@ -7,40 +7,52 @@ import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+
 public class UserProfileActivity extends AppCompatActivity {
     private TextView usernameTextView, ageTextView, addressTextView, userTypeTextView, contactInfoTextView;
+    private TextView interestedDogsHeader; // Header TextView for interested dogs
     private Button logoutButton;
+    private ListView interestedDogsListView;
     private DatabaseHelper dbHelper;
+    private ArrayAdapter<String> adapter;
+    private ArrayList<String> interestedDogsList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        // Get user username passed via Intent
+        // Get the username from the intent
         Intent intent = getIntent();
         String username = intent.getStringExtra("username");
 
         if (username == null) {
-            // Handle the case where no username is passed
             Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
             Intent loginIntent = new Intent(UserProfileActivity.this, MainActivity.class);
             startActivity(loginIntent);
             finish();
-            return; // Prevent further execution
+            return;
         }
 
-        // Set up UI elements
+        // Initialize UI elements
         dbHelper = new DatabaseHelper(this);
         usernameTextView = findViewById(R.id.usernameTextView);
         ageTextView = findViewById(R.id.ageTextView);
         addressTextView = findViewById(R.id.addressTextView);
         userTypeTextView = findViewById(R.id.userTypeTextView);
         contactInfoTextView = findViewById(R.id.contactInfoTextView);
+        interestedDogsHeader = findViewById(R.id.interestedDogsHeader); // Initialize header
         logoutButton = findViewById(R.id.logoutButton);
+        interestedDogsListView = findViewById(R.id.interestedDogsListView);
 
-        // Load user info from the database
+        interestedDogsList = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, interestedDogsList);
+        interestedDogsListView.setAdapter(adapter);
+
+        // Load user info and interested dogs
         loadUserInfo(username);
+        loadInterestedDogs(username);
 
         // Handle logout
         logoutButton.setOnClickListener(v -> logout());
@@ -54,35 +66,25 @@ public class UserProfileActivity extends AppCompatActivity {
                         DatabaseHelper.COLUMN_AGE,
                         DatabaseHelper.COLUMN_ADDRESS,
                         DatabaseHelper.COLUMN_USER_TYPE,
-                        DatabaseHelper.COLUMN_PHONE,   // For phone
-                        DatabaseHelper.COLUMN_EMAIL    // For email
+                        DatabaseHelper.COLUMN_PHONE,
+                        DatabaseHelper.COLUMN_EMAIL
                 },
                 DatabaseHelper.COLUMN_USERNAME + "=?",
                 new String[]{username}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
-            int usernameIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USERNAME);
-            int ageIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_AGE);
-            int addressIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_ADDRESS);
-            int userTypeIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE);
-            int phoneIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE);
-            int emailIndex = cursor.getColumnIndex(DatabaseHelper.COLUMN_EMAIL);
+            String usernameValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USERNAME));
+            String ageValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_AGE));
+            String addressValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_ADDRESS));
+            String userTypeValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_USER_TYPE));
+            String phoneValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE));
+            String emailValue = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_EMAIL));
 
-            if (usernameIndex != -1 && ageIndex != -1 && addressIndex != -1 && userTypeIndex != -1 && phoneIndex != -1 && emailIndex != -1) {
-                String usernameValue = cursor.getString(usernameIndex);
-                String ageValue = cursor.getString(ageIndex);
-                String addressValue = cursor.getString(addressIndex);
-                String userTypeValue = cursor.getString(userTypeIndex);
-                String phoneValue = cursor.getString(phoneIndex);
-                String emailValue = cursor.getString(emailIndex);
-
-                // Set the data into respective views
-                usernameTextView.setText("Username: " + usernameValue);
-                ageTextView.setText("Age: " + ageValue);
-                addressTextView.setText("Address: " + addressValue);
-                userTypeTextView.setText("User Type: " + userTypeValue);
-                contactInfoTextView.setText("Contact Info:\nPhone: " + phoneValue + "\nEmail: " + emailValue);
-            }
+            usernameTextView.setText("Username: " + usernameValue);
+            ageTextView.setText("Age: " + ageValue);
+            addressTextView.setText("Address: " + addressValue);
+            userTypeTextView.setText("User Type: " + userTypeValue);
+            contactInfoTextView.setText("Contact Info:\nPhone: " + phoneValue + "\nEmail: " + emailValue);
 
             cursor.close();
         } else {
@@ -90,10 +92,40 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void loadInterestedDogs(String username) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String query = "SELECT d." + DatabaseHelper.COLUMN_DOG_NAME + ", d." + DatabaseHelper.COLUMN_DOG_BREED +
+                ", d." + DatabaseHelper.COLUMN_DOG_AGE +
+                " FROM interested_dogs id " +
+                "INNER JOIN " + DatabaseHelper.TABLE_USERS + " u ON id.user_id = u.id " +
+                "INNER JOIN " + DatabaseHelper.TABLE_DOGS + " d ON id.dog_id = d.dog_id " +
+                "WHERE u." + DatabaseHelper.COLUMN_USERNAME + " = ?";
+
+        Cursor cursor = db.rawQuery(query, new String[]{username});
+
+        if (cursor != null && cursor.moveToFirst()) {
+            interestedDogsList.clear();
+            do {
+                String dogName = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_NAME));
+                String dogBreed = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_BREED));
+                String dogAge = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_DOG_AGE));
+
+                interestedDogsList.add(dogName + " (" + dogBreed + ", Age: " + dogAge + ")");
+            } while (cursor.moveToNext());
+
+            adapter.notifyDataSetChanged();
+            cursor.close();
+        } else {
+            interestedDogsList.add("No interested dogs yet.");
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     private void logout() {
-        // Logout functionality: Redirect to login page
         Intent loginIntent = new Intent(UserProfileActivity.this, MainActivity.class);
         startActivity(loginIntent);
         finish();
     }
 }
+

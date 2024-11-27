@@ -33,12 +33,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_DOG_IMAGE = "dog_image"; // To store image URL or base64 string (optional)
     public static final String COLUMN_SHELTER_USERNAME = "shelter_username"; // New column to associate dog with shelter
 
-    // New Table to Store Interested Dogs
+
     public static final String TABLE_INTERESTED_DOGS = "interested_dogs";
-    public static final String COLUMN_INTERESTED_ID = "id";
-    public static final String COLUMN_USER_ID = "user_id"; // Reference to user
-
-
+    public static final String COLUMN_INTERESTED_USER_ID = "user_id";
+    public static final String COLUMN_INTERESTED_DOG_ID = "dog_id";
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -70,13 +68,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COLUMN_SHELTER_USERNAME + " TEXT NOT NULL)"; // Added column to link dog to shelter
         db.execSQL(CREATE_DOGS_TABLE);
 
-        // Create the interested_dogs table
-        String CREATE_INTERESTED_DOGS_TABLE = "CREATE TABLE " + TABLE_INTERESTED_DOGS + " (" +
-                COLUMN_INTERESTED_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_USER_ID + " INTEGER, " +
-                COLUMN_DOG_ID + " INTEGER, " +
-                "FOREIGN KEY (" + COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + " (" + COLUMN_ID + "), " +
-                "FOREIGN KEY (" + COLUMN_DOG_ID + ") REFERENCES " + TABLE_DOGS + " (" + COLUMN_DOG_ID + "))";
+        String CREATE_INTERESTED_DOGS_TABLE = "CREATE TABLE interested_dogs (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "user_id INTEGER NOT NULL, " +
+                "dog_id INTEGER NOT NULL, " +
+                "date_interested TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                "FOREIGN KEY (user_id) REFERENCES users(id), " +
+                "FOREIGN KEY (dog_id) REFERENCES dogs(dog_id))";
         db.execSQL(CREATE_INTERESTED_DOGS_TABLE);
     }
 
@@ -108,6 +106,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             // Add new columns for contact info in version 5 (without website)
             db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_PHONE + " TEXT");
             db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_EMAIL + " TEXT");
+        }
+        if (oldVersion < 6) { // Assuming 6 is the next version
+            String CREATE_INTERESTED_DOGS_TABLE = "CREATE TABLE interested_dogs (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "user_id INTEGER NOT NULL, " +
+                    "dog_id INTEGER NOT NULL, " +
+                    "date_interested TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                    "FOREIGN KEY (user_id) REFERENCES users(id), " +
+                    "FOREIGN KEY (dog_id) REFERENCES dogs(dog_id))";
+            db.execSQL(CREATE_INTERESTED_DOGS_TABLE);
         }
     }
 }
