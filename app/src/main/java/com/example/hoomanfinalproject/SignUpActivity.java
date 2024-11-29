@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity {
     private EditText usernameEditText, passwordEditText;
@@ -48,7 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);  // Set dropdown style
         userTypeSpinner.setAdapter(adapter);  // Set the adapter to the Spinner
 
-// Set default selection to "Select User Type"
+        // Set default selection to "Select User Type"
         userTypeSpinner.setSelection(0); // Select the first item by default
 
         // Toggle visibility based on user type selection
@@ -79,17 +81,41 @@ public class SignUpActivity extends AppCompatActivity {
             String phone = phoneEditText.getText().toString().trim();
             String userType = userTypeSpinner.getSelectedItem().toString(); // Get selected user type
 
+            // Regular expressions for validation
+            String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+            String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+            String phonePattern = "^\\+?[0-9]{1,4}?[-.\\s]?[0-9]{1,15}$";
+
+            // Check if the fields are empty
             if (username.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if ("Select User Type".equals(userType)) {
-                Toast.makeText(this, "Please select a valid user type", Toast.LENGTH_SHORT).show();
+            // Validate phone
+            Pattern phonePat = Pattern.compile(phonePattern);
+            Matcher phoneMatcher = phonePat.matcher(phone);
+            if (!phoneMatcher.matches()) {
+                Toast.makeText(this, "Invalid phone number format", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Continue with user type specific data (Adopter or Shelter)
+            // Validate email
+            Pattern emailPat = Pattern.compile(emailPattern);
+            Matcher emailMatcher = emailPat.matcher(email);
+            if (!emailMatcher.matches()) {
+                Toast.makeText(this, "Invalid email format", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Validate password
+            Pattern passwordPat = Pattern.compile(passwordPattern);
+            Matcher passwordMatcher = passwordPat.matcher(password);
+            if (!passwordMatcher.matches()) {
+                Toast.makeText(this, "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.COLUMN_USERNAME, username);
             values.put(DatabaseHelper.COLUMN_PASSWORD, password);
@@ -122,7 +148,7 @@ public class SignUpActivity extends AppCompatActivity {
                 values.put("shelterLocation", shelterLocation);
             }
 
-            // Insert into database
+            // Insert into the database
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             long result = db.insert(DatabaseHelper.TABLE_USERS, null, values);
 

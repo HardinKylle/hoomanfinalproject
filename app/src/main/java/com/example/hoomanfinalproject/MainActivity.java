@@ -10,6 +10,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+/**
+ * Nov 7,2024
+ * @author Bonggay, Hardin, Mangahas, Santos, Teh
+ *
+ */
+
+
 public class MainActivity extends AppCompatActivity {
     private EditText usernameEditText, passwordEditText;
     private Spinner userTypeSpinner;
