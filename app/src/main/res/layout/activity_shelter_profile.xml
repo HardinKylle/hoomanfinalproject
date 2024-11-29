@@ -69,7 +69,7 @@
             android:gravity="center"
             android:layout_marginBottom="16dp">
 
-            <!-- Add Dog Button (slightly left) -->
+            <!-- Add Dog Button -->
             <Button
                 android:id="@+id/addDogButton"
                 android:layout_width="wrap_content"
@@ -77,32 +77,16 @@
                 android:text="Add Dog"
                 android:backgroundTint="#4CAF50"
                 android:textColor="#FFFFFF"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"/>
+                android:layout_marginEnd="8dp" />
 
-            <!-- Message Button (centered between Add Dog and Logout) -->
-            <Button
-                android:id="@+id/messageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Messages"
-                android:backgroundTint="#FFC107"
-                android:textColor="#FFFFFF"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="1"
-                android:gravity="center"/>
-
-            <!-- Logout Button (slightly left) -->
+            <!-- Logout Button -->
             <Button
                 android:id="@+id/logoutButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Logout"
                 android:backgroundTint="#000000"
-                android:textColor="#FFFFFF"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"/>
-
+                android:textColor="#FFFFFF" />
         </LinearLayout>
 
         <!-- List of Dogs -->

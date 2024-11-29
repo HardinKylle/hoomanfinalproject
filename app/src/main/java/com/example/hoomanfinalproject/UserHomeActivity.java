@@ -7,6 +7,7 @@
     import android.net.Uri;
     import android.os.Bundle;
     import android.widget.Button;
+    import android.widget.ImageButton;
     import android.widget.ImageView;
     import android.widget.TextView;
     import android.widget.Toast;
@@ -28,6 +29,7 @@
         private TextView dogNameTextView, dogBreedTextView, dogAgeTextView, dogDescriptionTextView, dogShelterTextView;
         private ImageView dogImageView;
         private Button nextButton;
+        private ImageButton messageButton;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,8 @@
             dogShelterTextView = findViewById(R.id.dogShelterTextView);
             dogImageView = findViewById(R.id.dogImageView);
             nextButton = findViewById(R.id.nextButton);
-            Button interestedButton = findViewById(R.id.interestedButton);
-            interestedButton.setOnClickListener(v -> markDogAsInterested());
+            messageButton = findViewById(R.id.messageButton); // Initialize the message button
+
             // Load adoptable dogs from multiple shelters
             loadAdoptableDogs();
 
@@ -66,10 +68,50 @@
                 displayDog(currentDogIndex);
             });
 
+            // Set up the Message button click listener
+            messageButton.setOnClickListener(v -> openMessagingApp());
+
             // Set up the Profile Icon click listener
             ImageView profileIcon = findViewById(R.id.profileIcon);
             profileIcon.setOnClickListener(v -> openUserProfile());
+        }
 
+        private void openMessagingApp() {
+            // Get the shelter username for the current dog
+            Dog currentDog = dogsList.get(currentDogIndex);
+            String shelterUsername = currentDog.getShelterName(); // This is the shelter username stored in the dog object
+
+            // Fetch the shelter's phone number from the database using the shelter username
+            String shelterPhoneNumber = getShelterPhoneNumber(shelterUsername);
+
+            if (shelterPhoneNumber != null && !shelterPhoneNumber.isEmpty()) {
+                // Create an intent to open the messaging app with the shelter's phone number
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("sms:" + shelterPhoneNumber)); // Pre-fill the number
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Shelter phone number not found.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private String getShelterPhoneNumber(String shelterUsername) {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            String phoneNumber = null;
+
+            // Query the 'users' table for the shelter's phone number based on shelterUsername
+            Cursor cursor = db.query(DatabaseHelper.TABLE_USERS,
+                    new String[]{DatabaseHelper.COLUMN_PHONE},
+                    DatabaseHelper.COLUMN_USERNAME + " = ? AND " + DatabaseHelper.COLUMN_USER_TYPE + " = ?",
+                    new String[]{shelterUsername, "Shelter"}, // Only fetch the shelter's info
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                // Get the shelter's phone number
+                phoneNumber = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_PHONE));
+                cursor.close();
+            }
+
+            return phoneNumber;
         }
 
         private void markDogAsInterested() {
